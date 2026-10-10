@@ -1,4 +1,4 @@
-from app.structured_output import classify_question
+from app.structured_output import classify_question_stream_result
 
 
 QUESTIONS = [
@@ -9,17 +9,28 @@ QUESTIONS = [
 ]
 
 
+def print_fragment(fragment: str) -> None:
+    """Print each model fragment immediately as it arrives."""
+    print(fragment, end="", flush=True)
+
+
 def main() -> None:
     for question in QUESTIONS:
-        result = classify_question(question)
-        print(f"问题: {question}")
-        print(f"结果: {result}")
-        print()
+        print(f"问题：{question}")
+        print("流式回答：", end="", flush=True)
+
+        result = classify_question_stream_result(
+            question,
+            on_fragment=print_fragment,
+        )
+
+        print("\n流式回答结束")
+        print(f"结构化结果：{result}\n")
 
     try:
-        classify_question("   ")
+        classify_question_stream_result("   ")
     except ValueError as exc:
-        print(f"空问题校验通过: {exc}")
+        print(f"空问题校验通过：{exc}")
     else:
         raise AssertionError("empty question should raise ValueError")
 

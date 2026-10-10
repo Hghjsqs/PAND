@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from collections.abc import Iterator
+from typing import Any, Callable
 
-from app.llm_client import chat
+from app.llm_client import chat, stream_chat
+
 
 
 ALLOWED_CATEGORIES = {
@@ -87,4 +89,39 @@ JSON 必须严格包含以下字段：
 """.strip()
 
     raw = chat(instruction)
+    return _validate_result(_parse_json_object(raw))
+
+
+def classify_question_stream(user_prompt: str) -> Iterator[str]:
+    """流式输出函数"""
+    if not user_prompt.strip():
+        raise ValueError("user_prompt cannot be empty")
+    instruction = f"""
+你是企业知识库问答系统的路由器。请分析用户问题，并且只返回一个 JSON 对象，不能返回 Markdown、解释文字或代码块。
+
+JSON 必须严格包含以下字段：
+- answer: 对问题的简短回答；
+- category: 只能是 leave_policy、reimbursement、purchase、it_support、unknown 之一；
+- need_retrieval: 是否需要查询企业知识库，必须是 true 或 false；
+- confidence: 0 到 1 之间的数字。
+
+如果问题不属于企业知识库范围，category 使用 unknown，need_retrieval 使用 false。
+
+用户问题：{user_prompt}
+""".strip()
+    yield from stream_chat(instruction)
+
+
+def classify_question_stream_result(
+    user_prompt: str,
+    on_fragment: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    """Stream a response, then parse and validate the complete JSON result."""
+    fragments: list[str] = []
+    for fragment in classify_question_stream(user_prompt):
+        fragments.append(fragment)
+        if on_fragment is not None:
+            on_fragment(fragment)
+
+    raw = "".join(fragments)
     return _validate_result(_parse_json_object(raw))
