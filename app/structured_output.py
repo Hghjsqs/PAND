@@ -71,7 +71,7 @@ def classify_question(user_prompt: str) -> dict[str, Any]:
     """Classify an enterprise question and return a validated Python dict."""
     if not user_prompt.strip():
         raise ValueError("user_prompt cannot be empty")
-
+    
     instruction = f"""
 你是企业知识库问答系统的路由器。请分析用户问题，并且只返回一个 JSON 对象，不能返回 Markdown、解释文字或代码块。
 
