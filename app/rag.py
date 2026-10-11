@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Iterable
+from collections.abc import Iterator, Iterable
 
-from app.llm_client import chat
+from app.llm_client import chat, stream_chat
 from app.retriever import SearchResult, search_jsonl
 
 
@@ -67,13 +67,29 @@ def answer_question(
     return chat(prompt)
 
 
+def stream_answer_question(
+    question: str,
+    chunks_path: Path,
+    top_k: int = 3,
+) -> Iterator[str]:
+    """流式生成 RAG 答案；调用方可以边收到边显示。"""
+
+    # 检索和 Prompt 构造仍然是一次性完成的，只有模型生成阶段是流式的。
+    results = search_jsonl(chunks_path, question, top_k=top_k)
+    prompt = build_rag_prompt(question, results)
+    yield from stream_chat(prompt)
+
+
 def main() -> None:
-    """命令行演示：输入问题并输出带引用的答案。"""
+    """命令行演示：输入问题并流式输出带引用的答案。"""
 
     project_root = Path(__file__).resolve().parents[1]
     chunks_path = project_root / "data" / "processed" / "chunks.jsonl"
     question = input("请输入问题：").strip()
-    print(answer_question(question, chunks_path))
+    print("\n回答：", end="", flush=True)
+    for fragment in stream_answer_question(question, chunks_path):
+        print(fragment, end="", flush=True)
+    print()
 
 
 if __name__ == "__main__":
