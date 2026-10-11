@@ -29,6 +29,12 @@ def main() -> None:
         unrelated_results = search_jsonl(chunks_path, "今天的天气怎么样", top_k=3)
         assert unrelated_results == []
 
+        # 阈值可以显式调低，用于观察低分候选；默认值会过滤它们。
+        low_score_results = search_jsonl(
+            chunks_path, "今天的天气怎么样", top_k=3, min_score=0.0
+        )
+        assert low_score_results
+
     print("检索测试通过")
 
 

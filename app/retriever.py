@@ -76,19 +76,23 @@ def search(
     query: str,
     chunks: Iterable[dict[str, Any]],
     top_k: int = 3,
+    min_score: float = 0.5,
 ) -> list[SearchResult]:
-    """返回有词项重合的 Chunk，并按分数从高到低排序。"""
+    """返回达到最低相关分数的 Chunk，并按分数从高到低排序。"""
 
     if not query.strip():
         raise ValueError("query cannot be empty")
     if top_k <= 0:
         raise ValueError("top_k must be positive")
+    if not 0 <= min_score <= 1:
+        raise ValueError("min_score must be between 0 and 1")
 
     results: list[SearchResult] = []
     for chunk in chunks:
         # 只使用正文参与匹配，来源、章节等元数据暂时用于展示和引用。
         score, matched = _score(query, str(chunk["text"]))
-        if score > 0:
+        # 低分结果通常只是碰巧命中了一个常见字，不应作为模型证据。
+        if score >= min_score:
             results.append(SearchResult(chunk, score, matched))
 
     # 分数相同时用稳定的 chunk_id 排序，保证同一个问题每次结果顺序一致。
@@ -98,10 +102,15 @@ def search(
     return results[:top_k]
 
 
-def search_jsonl(path: Path, query: str, top_k: int = 3) -> list[SearchResult]:
+def search_jsonl(
+    path: Path,
+    query: str,
+    top_k: int = 3,
+    min_score: float = 0.5,
+) -> list[SearchResult]:
     """组合“读取 Chunk + 检索”两个步骤，提供更方便的调用入口。"""
 
-    return search(query, load_chunks(path), top_k=top_k)
+    return search(query, load_chunks(path), top_k=top_k, min_score=min_score)
 
 
 def main() -> None:
