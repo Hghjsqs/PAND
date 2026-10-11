@@ -86,6 +86,26 @@ def _validate_result(value: dict[str, Any], require_citations: bool = False) -> 
     return value
 
 
+def _validate_citation_targets(
+    citations: list[dict[str, Any]],
+    results: list[SearchResult],
+) -> None:
+    """确保模型引用的文件、章节和 Chunk ID 都来自本次检索结果。"""
+
+    allowed = {
+        (
+            str(result.chunk.get("source", "")),
+            str(result.chunk.get("section", "")),
+            str(result.chunk.get("chunk_id", "")),
+        )
+        for result in results
+    }
+    for citation in citations:
+        target = (citation["source"], citation["section"], citation["chunk_id"])
+        if target not in allowed:
+            raise ValueError(f"citation does not match retrieved evidence: {target}")
+
+
 def _classification_prompt(user_prompt: str) -> str:
     """构造不依赖知识库的分类 Prompt，保留旧接口的职责。"""
 
@@ -164,13 +184,18 @@ def classify_question_stream_result(
 ) -> dict[str, Any]:
     """收集流式结果后解析；有 chunks_path 时同时校验 citations。"""
 
+    # 结果校验阶段也读取同一批证据，防止模型伪造来源。
+    results = search_jsonl(chunks_path, user_prompt, top_k=top_k) if chunks_path else None
     fragments: list[str] = []
     for fragment in classify_question_stream(user_prompt, chunks_path, top_k):
         fragments.append(fragment)
         if on_fragment is not None:
             on_fragment(fragment)
 
-    return _validate_result(
+    result = _validate_result(
         _parse_json_object("".join(fragments)),
         require_citations=chunks_path is not None,
     )
+    if results is not None:
+        _validate_citation_targets(result["citations"], results)
+    return result
