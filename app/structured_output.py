@@ -76,6 +76,8 @@ def _validate_result(value: dict[str, Any], require_citations: bool = False) -> 
         citations = value.get("citations")
         if not isinstance(citations, list):
             raise ValueError("citations must be a list")
+        if citations and value["need_retrieval"] is not True:
+            raise ValueError("need_retrieval must be true when citations are present")
         for citation in citations:
             if not isinstance(citation, dict):
                 raise ValueError("each citation must be an object")
@@ -132,6 +134,7 @@ def build_structured_prompt(question: str, results: list[SearchResult]) -> str:
         raise ValueError("question cannot be empty")
 
     return f"""
+Consistency rule: citations must be non-empty only when need_retrieval is true. If citations contain any item, set need_retrieval to true.
 你是企业知识库问答助手。只能依据下方检索证据回答，不得补充证据之外的制度信息。
 只返回一个 JSON 对象，不要返回 Markdown、解释文字或代码块。
 
