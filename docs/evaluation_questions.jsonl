@@ -1,0 +1,14 @@
+{"id":"leave-001","question":"年假怎么申请？","answer":"至少提前一个工作日通过 OA 系统提交年假申请，填写日期、天数和工作交接人，并由直属主管审批。","source":"leave_policy.md","section":"2. 请假申请流程","type":"fact"}
+{"id":"leave-002","question":"连续休假超过三天需要谁审批？","answer":"直属主管和部门负责人都需要审批。","source":"leave_policy.md","section":"2. 请假申请流程","type":"fact"}
+{"id":"leave-003","question":"入职满五年每年有几天年假？","answer":"五天。累计工作满一年但不满十年的员工每年享有五天年假。","source":"leave_policy.md","section":"1. 年假额度","type":"numeric"}
+{"id":"reimbursement-001","question":"报销需要哪些材料？","answer":"有效发票、费用明细、报销申请单和对应的审批记录。","source":"reimbursement_policy.md","section":"2. 报销材料","type":"list"}
+{"id":"reimbursement-002","question":"超过一万元的报销需要谁审批？","answer":"直属主管、部门负责人和财务负责人审批。","source":"reimbursement_policy.md","section":"4. 审批规则","type":"numeric"}
+{"id":"reimbursement-003","question":"费用发生后多久必须提交报销？","answer":"三十个自然日内；跨月费用原则上应在次月十日前提交。","source":"reimbursement_policy.md","section":"3. 提交时限","type":"numeric"}
+{"id":"it-001","question":"电脑无法连接公司网络怎么办？","answer":"先确认无线开关和 XH-Office 网络，重新获取 IP 并重启网络适配器；若同一区域三台以上设备受影响，提交网络故障工单。","source":"it_support.md","section":"1. 网络无法连接","type":"procedure"}
+{"id":"it-002","question":"密码输错几次会锁定账号？","answer":"连续五次输入错误密码会触发账号锁定。","source":"it_support.md","section":"2. 账号锁定","type":"numeric"}
+{"id":"it-003","question":"IT 服务台几点上班？","answer":"工作日 09:00 至 18:00。","source":"it_support.md","section":"4. 服务时间和优先级","type":"fact"}
+{"id":"purchase-001","question":"采购金额超过五万元需要谁审批？","answer":"部门负责人、行政采购部和分管副总裁审批。","source":"purchase_policy.md","section":"2. 审批金额","type":"numeric"}
+{"id":"purchase-002","question":"超过五千元的采购需要几家供应商报价？","answer":"原则上至少取得两家供应商报价。","source":"purchase_policy.md","section":"3. 供应商和比价","type":"numeric"}
+{"id":"purchase-003","question":"可以先买办公用品再补采购申请吗？","answer":"不可以，未经审批不得先采购后补申请。","source":"purchase_policy.md","section":"1. 采购申请","type":"policy"}
+{"id":"unknown-001","question":"公司今年会不会发年终奖？","answer":"文档中没有关于年终奖的信息，应拒答并说明没有找到依据。","source":null,"section":null,"type":"unanswerable"}
+{"id":"unknown-002","question":"北京今天下雨吗？","answer":"这不属于企业知识库范围，应拒答。","source":null,"section":null,"type":"out_of_scope"}
