@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.errors import LLMClientError
@@ -16,6 +17,15 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CHUNKS_PATH = PROJECT_ROOT / "data" / "processed" / "chunks.jsonl"
 
 app = FastAPI(title="Enterprise Knowledge Base QA", version="0.1.0")
+
+# 前端开发服务器和后端端口不同，需要允许本地前端跨域调用 API。
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.middleware("http")
